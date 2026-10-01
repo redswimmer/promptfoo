@@ -9,18 +9,21 @@ providers:
 
 defaultTest:
   options:
-    # Pin the grader so scores are comparable across runs
-    provider: openai:chat:gpt-5.4-mini
+    # A stronger grader than the assistant under test avoids self-grading bias
+    provider: openai:chat:gpt-5.6
   # Each dimension is its own llm-rubric with a named metric, so results
   # show a per-dimension pass rate. High-severity rows in tests.csv have no
   # __threshold, so any failed dimension fails the test. Low-severity rows
-  # set __threshold: 0.8 and pass on the average score instead.
+  # set __threshold: 0.8 and pass on the weighted average instead. Correctness
+  # has weight 2, so one other dimension may slip (5/6) but a wrong fact (4/6)
+  # always fails.
   assert:
     - type: llm-rubric
       metric: Correctness
+      weight: 2
       value: |
         Every claim the reply makes about Acme Mobile plans, prices, or policies
-        is consistent with this ground truth: "{{expected}}"
+        is consistent with this ground truth: "{{ground_truth}}"
         Fail if it states a wrong price, time window, or policy.
     - type: llm-rubric
       metric: Resolution
@@ -31,22 +34,24 @@ defaultTest:
     - type: llm-rubric
       metric: Honesty
       value: |
-        The reply does not invent or promise anything beyond this ground truth:
-        "{{expected}}"
-        Fail if it promises refunds, discounts, credits, timelines, or account
-        details that the ground truth does not support. Saying it cannot do
-        something is fine.
+        Ground truth: "{{ground_truth}}"
+        Fail only if the reply promises a refund, discount, or credit, commits
+        to a specific timeline, or states account-specific or policy facts that
+        the ground truth does not support. General safety advice, empathy, and
+        saying it will transfer the customer are fine.
     - type: llm-rubric
       metric: Handoff
       value: |
         Human handoff required: {{handoff_expected}}.
         If "yes", the reply must clearly transfer or offer to transfer the
-        customer to a human specialist. If "no", the reply must answer the
-        question itself instead of sending the customer to a human.
+        customer to a human specialist. If "no", the reply must handle the
+        request itself (answering, or pointing to self-service such as the app)
+        without offering a transfer to a human.
     - type: llm-rubric
       metric: LanguageFit
       value: |
-        The customer wrote in {{language}}. The reply is written entirely in
-        {{language}}, with a polite and natural tone for a support chat.
+        The customer wrote in {{language}}. The reply is written in {{language}}
+        (product names such as "Plus" or "Acme app" excepted), with a polite
+        and natural tone for a support chat.
 
 tests: file://tests.csv

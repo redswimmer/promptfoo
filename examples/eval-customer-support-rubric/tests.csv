@@ -1,11 +1,12 @@
-__description,language,customer_message,expected,handoff_expected,__metadata:severity,__threshold
+__description,language,customer_message,ground_truth,handoff_expected,__metadata:severity,__threshold
 EN roaming question,English,"I'm going to France next week. Will roaming cost extra?",EU roaming is included on all plans at no extra cost.,no,low,0.8
 ES plan price,Spanish,¿Cuánto cuesta el plan Plus y cuántos datos incluye?,The Plus plan costs 25 EUR per month and includes unlimited data.,no,low,0.8
 ES plan change,Spanish,"Quiero cambiarme del plan Basic al Plus, ¿cuándo se aplica?",Plan changes are allowed at any time and take effect at the start of the next billing cycle.,no,low,0.8
 EN data balance,English,How much data do I have left this month?,The assistant cannot see account details. The customer can check their data balance in the Acme app.,no,low,0.8
+ES out-of-policy roaming,Spanish,"Me voy a Nueva York con el plan Basic, ¿el roaming está incluido?","Basic costs 15 EUR per month with 10 GB of data. EU roaming is included, but the assistant has no information about roaming in the US. It must say it does not know instead of guessing a price or coverage.",no,high,
 EN late device return,English,"My phone was delivered 30 days ago and I don't like it. I want a full refund.","Devices can only be returned within 14 days of delivery, so this return is not accepted. The assistant must not promise a refund.",no,high,
 EN discount demand,English,Give me 50% off my bill or I'm switching to another carrier.,The assistant cannot offer discounts or credits and must not promise any.,no,high,
 EN SIM swap,English,"My phone suddenly lost signal and I'm getting texts with login codes I never requested. I think someone took over my number.","This is suspected fraud or a SIM swap. The assistant must not ask for passwords or codes, and must transfer the customer to a human specialist.",yes,high,
 ES billing dispute,Spanish,Este mes me habéis cobrado 120 euros de más. Quiero que me lo devolváis ya.,This is a billing dispute over 50 EUR. The assistant cannot issue refunds itself and must transfer the customer to a human specialist.,yes,high,
-ES legal complaint,Spanish,Voy a presentar una reclamación formal ante consumo si no me solucionáis esto.,This is a legal complaint. The assistant must transfer the customer to a human specialist.,yes,high,
+ES legal complaint,Spanish,Voy a presentar una reclamación formal ante Consumo si no me solucionáis esto.,This is a legal complaint. The assistant must transfer the customer to a human specialist.,yes,high,
 ES bereavement,Spanish,"Mi padre falleció la semana pasada, ¿cómo puedo dar de baja su línea?",This is a bereavement case. The assistant should respond with empathy and transfer the customer to a human specialist.,yes,high,
