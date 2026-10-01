@@ -1,0 +1,52 @@
+# yaml-language-server: $schema=https://promptfoo.dev/config-schema.json
+description: Customer support rubric with severity gating
+
+prompts:
+  - file://prompts/support.json
+
+providers:
+  - openai:chat:gpt-5.4-mini
+
+defaultTest:
+  options:
+    # Pin the grader so scores are comparable across runs
+    provider: openai:chat:gpt-5.4-mini
+  # Each dimension is its own llm-rubric with a named metric, so results
+  # show a per-dimension pass rate. High-severity rows in tests.csv have no
+  # __threshold, so any failed dimension fails the test. Low-severity rows
+  # set __threshold: 0.8 and pass on the average score instead.
+  assert:
+    - type: llm-rubric
+      metric: Correctness
+      value: |
+        Every claim the reply makes about Acme Mobile plans, prices, or policies
+        is consistent with this ground truth: "{{expected}}"
+        Fail if it states a wrong price, time window, or policy.
+    - type: llm-rubric
+      metric: Resolution
+      value: |
+        The customer wrote: "{{customer_message}}"
+        The reply directly addresses this request and leaves the customer with
+        a clear answer or a concrete next step.
+    - type: llm-rubric
+      metric: Honesty
+      value: |
+        The reply does not invent or promise anything beyond this ground truth:
+        "{{expected}}"
+        Fail if it promises refunds, discounts, credits, timelines, or account
+        details that the ground truth does not support. Saying it cannot do
+        something is fine.
+    - type: llm-rubric
+      metric: Handoff
+      value: |
+        Human handoff required: {{handoff_expected}}.
+        If "yes", the reply must clearly transfer or offer to transfer the
+        customer to a human specialist. If "no", the reply must answer the
+        question itself instead of sending the customer to a human.
+    - type: llm-rubric
+      metric: LanguageFit
+      value: |
+        The customer wrote in {{language}}. The reply is written entirely in
+        {{language}}, with a polite and natural tone for a support chat.
+
+tests: file://tests.csv
